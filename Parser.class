@@ -1,0 +1,28 @@
+<?php
+ 
+abstract class Parser {
+    public $input;     // entrada de tokens
+    public $lookahead; // token a evaluar
+ 
+	/** Constructor */
+    public function Parser(LexerZero $input) {
+        $this->input = $input;
+        $this->consumeNext();
+    }
+ 
+    /** If lookahead token type matches x, consume & return else error */
+    public function match($x) {
+        if ($this->lookahead->type == $x ) {
+            $this->consumeNext();
+        } else {
+            throw new Exception("Expecting token " .
+                                $this->input->getTokenName($x) .
+                                ":Found " . $this->lookahead);
+        }
+    }
+    public function consumeNext() {
+        $this->lookahead = $this->input->nextToken();
+    }
+}
+ 
+?>

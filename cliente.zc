@@ -1,0 +1,10 @@
+Tabla cliente
+IdUsuario	Entero pk inc 
+Nombre	Texto	largo 80
+Usuario	Texto	largo 20 uq  
+Clave		Texto	largo 40 nn
+Correo		Texto	largo 100 uq
+Permisos	Entero	largo 4 default 0	
+Activo		Entero	largo 1 default 0
+
+

@@ -1,0 +1,152 @@
+<?php
+
+/** **/ 
+/** **/ 
+require_once('Lexer.class');
+ 
+class LexerZero extends Lexer {
+    const INVALIDO		= 0;
+    const SPACE 		= 2;
+    const COMMA     	= 3;
+    const PCOMMA    	= 4;
+    const LBRACK    	= 5;
+    const RBRACK    	= 6;
+    const LPARENTESIS   = 7;
+    const RPARENTESIS   = 8;
+    const NAME	 		= 9;
+    const VARIABLE	 	= 10;
+    const NUMERO		= 11;
+    const COMANDO		= 12;
+    
+    protected $__flagSpaces = true;
+    
+    static $tokenNames = array("INVALIDO", "<EOF>",
+                               "SPACE", "COMMA", "PCOMMA",
+                               "LBRACK", "RBRACK",
+                               "LPARENTESIS", "RPARENTESIS",
+                               "NOMBRE","VARIABLE",
+                               "NUMERO", "COMANDO" );
+                               
+								
+ 
+    public function tokenSpc() {  return $this->__flagSpaces; } 
+ 
+    public function tokenSpcOn() { return ($this->__flagSpaces = true); } 
+ 
+    public function tokenSpcOff() { return ($this->__flagSpaces = false); }
+ 
+    public function getTokenName($x) {    
+			return LexerZero::$tokenNames[$x];       
+    }
+ 
+    public function __construct($input) {
+		// $tokenNames[99] = "INVALIDO";
+        parent::__construct($input);
+    }
+ 
+	/** Identifica si el caracter corresponde a una letra valida **/ 
+    public function isLetter() {
+        return $this->c >= 'a' && $this->c <= 'z' ||
+               $this->c >= 'A' && $this->c <= 'Z';
+    }
+    
+	/** **/ 
+    public function isNumber() {
+        return $this->c >= '0' && $this->c <= '9';
+        // return is_numeric($this->c);
+    }
+ 
+    
+	/** **/ 
+    public function isAscii() {
+        return ord($this->c) >= 33 && ord($this->c) <= 126;
+        // return is_numeric($this->c);
+    }
+ 
+    /** **/ 
+    public function nextToken() {
+		// echo "_".$this->c."_";
+        while ( $this->c != self::EOF ) {
+            switch ( $this->c ) {
+                case ' ' :  case '\t': case '\n':  case '\r': 	
+							$this->getSpace();
+							if ($this->__flagSpaces) 
+								return new Token(self::SPACE, " ");
+							else
+								continue;								
+                case ',' : $this->getNextChar();
+                           return new Token(self::COMMA, ",");
+                case ';' : $this->getNextChar();
+                           return new Token(self::PCOMMA, ";");
+                case '[' : $this->getNextChar();
+                           return new Token(self::LBRACK, "[");
+                case ']' : $this->getNextChar();
+                           return new Token(self::RBRACK, "]");
+                case '(' : $this->getNextChar();
+                           return new Token(self::LPARENTESIS, "(");
+                case ')' : $this->getNextChar();
+                           return new Token(self::RPARENTESIS, ")");
+                           
+                default:
+                    if ($this->isLetter() ) return $this->isValidName();
+                    if ($this->isLetter() ) return $this->isName();
+                    if ($this->isNumber() ) return $this->isNum();
+                    if ($this->isAscii() )  return new Token(self::INVALIDO, "_");
+                    if (ctype_space($this->c)) {
+						$this->getSpace();
+						if ($this->__flagSpaces) 
+							return new Token(self::SPACE, " ");
+					} else { 
+						echo "Caracter invalido :".ctype_space($this->c).":";
+						throw new Exception("Caracter invalido: " + $this->c);
+					} // endif
+            }
+        }
+        return new Token(self::EOF_TYPE,"<EOF>");
+    }
+ 
+    /** NAME is sequence of >=1 letter */
+    public function isNum() {
+        $buf = '';
+        do {
+            $buf .= $this->c;
+            $this->getNextChar();
+        } while ($this->isNumber());
+ 
+        return new Token(self::NUMERO, $buf);
+    }
+ 
+ 
+    /** NAME is sequence of >=1 letter */
+    public function isName() {
+        $buf = '';
+        do {
+            $buf .= $this->c;
+            $this->getNextChar();
+        } while ($this->isLetter());
+ 
+        return new Token(self::NAME, $buf);
+    }
+ 
+    /** isValidName : is sequence of >=1 letter or numbers */
+    public function isValidName() {
+        $buf = '';
+        do {
+            $buf .= $this->c;
+            $this->getNextChar();
+        } while ($this->isLetter()||($this->isNumber()));
+        return new Token(self::VARIABLE, $buf);
+    }
+ 
+    /** ignoramos los espacios */
+    public function getSpace() {
+		$cc=0;		
+        while(ctype_space($this->c)) {
+            $this->getNextChar();
+            $cc++; 
+        }  // wend
+        return $cc;
+    }
+}
+ 
+?>

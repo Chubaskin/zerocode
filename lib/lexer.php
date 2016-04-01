@@ -9,12 +9,21 @@ class Lexer
     {
         ;
     }
+
+    public static function test($string)
+    {
+    	$len = strlen($string);
+
+    	return $len;
+    }
+    
     public static function tokenize($string)
     {
         $len = strlen($string);
         $tokens = array();
         $current_token = new Token(Token::T_NONE, 0);
-        
+
+                
         $i = 0;
         while($i < $len) {
             $c = $string[$i];
@@ -24,6 +33,8 @@ class Lexer
                     break;
                 case ' ':
                     self::push($tokens, $current_token, $i);
+                    // ************************************************************ //
+                    print($current_token->getName($current_token));
                     break;
                 case '"':
                     if($current_token->getData() == null) {

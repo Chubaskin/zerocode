@@ -1,20 +1,27 @@
 <?php
-# namespace Chubasco\ZeroCode;
+namespace Chubasco\ZeroCode;
+// include shared code
+include '../lib/common.php';
+include '../lib/lexer.php';
+include '../lib/token.php';
 
-include 'lib/lexer.php';
-include 'lib/token.php';
+// start or continue the session
+session_start();
+header('Cache-control: private');
+
 
 $file = fopen("../README","r");
 
-while(!feof($file))
+while(! feof($file))
   {
   	$linea = fgets($file);
-  echo $linea. "<br />";
+  echo ">>".$linea. "<< ";
   
-  // $current_token = new Token(Token::T_NONE, 0);
-  // $tokens = Lexer::tokenize($linea);
- //	$tokens = Lexer::test($linea);
-  // echo $tokens; 
+  $current_token = new Token(Token::T_NONE, 0);
+  $tokens = Lexer::tokenize($linea);
+	// $tokens = Lexer::test($linea);
+    // print_r($tokens);
+    echo "  <br />";
   
   } // wend
 

@@ -1,0 +1,31 @@
+<?php
+ 
+abstract class Lexer {
+ 
+    const EOF       = -1; // End Of File
+    const EOF_TYPE  = 1;  // Token EOF
+    protected $input;     // entrada de texto
+    protected $p = 0;     // Posicion actual del cursor
+    protected $c;         // Cursor actual
+ 
+    public function Lexer($input) {
+        $this->input = $input;
+        $this->c = substr($input, $this->p, 1);
+    }
+ 
+    /** Nos movemos un caracter a la vez o hasta encontrar "end of file" */
+    public function getNextChar() {
+        $this->p++;
+        if ($this->p >= strlen($this->input)) {
+            $this->c = Lexer::EOF;
+        }
+        else {
+            $this->c = substr($this->input, $this->p, 1);
+        }
+    }
+ 
+    public abstract function nextToken();
+    public abstract function getTokenName($tokenType);
+}
+ 
+?>

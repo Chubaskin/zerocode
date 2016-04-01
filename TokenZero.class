@@ -1,0 +1,45 @@
+<?php
+
+require_once('Token.class');
+ 
+class TokenZero extends Token {
+	const NIL 			= 0;
+    const TABLA     	= 1;
+    const TEXTO     	= 2;
+    const ENTERO    	= 3;
+    const FLOTANTE    	= 4;
+    
+    static $tokenNamesCmd = array( "nil", 
+								"TABLA", "TEXTO", 
+								"ENTERO");
+
+
+    private $modifiers;
+ 
+    public function __construct($type, $text) {
+		parent::__construct($type, $text);
+        $this->modifiers = array('pk' => false,
+                              'length' => 10,
+                              'inc' => false,
+                              'unique' => false,
+                              'null' => true,
+                              'zero' => false,
+                              'default' => "",                              
+                              'isActive' => false);
+    }  // constructor
+
+
+    /** isValidCmd : Comando Válido */
+    public function isValidCmd() {
+		return is_numeric(array_search( strtoupper($this->getText()), 
+										self::$tokenNamesCmd ));		
+    }
+
+
+    public function __toString() {
+        $tname = LexerZero::$tokenNames[$this->type];
+        return "<'" . $this->text . "'," . $tname . ">";
+    }
+}
+ 
+?>
